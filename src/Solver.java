@@ -1,6 +1,3 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +36,11 @@ public class Solver {
         }
         for (int i = 0; i < n - 1; i++) {
             for (int j = i + 1; j < n; j++) {
-                getEdges(names[i], names[j], g);
+                boolean isSame = getEdges(names[i], names[j], g);
+                if (isSame &&
+                        names[i].length() > names[j].length()) {
+                    return "Impossible";
+                }
             }
         }
 
@@ -59,7 +60,7 @@ public class Solver {
         int[] used = new int[ALPHABET];
         for (int i = 0; i < ALPHABET; i++) {
             if (used[i] == 0) {
-                if (!dfs(i, used, g, ans)) {
+                if (dfsHasCycle(i, used, g, ans)) {
                     return false;
                 }
             }
@@ -68,29 +69,30 @@ public class Solver {
         return true;
     }
 
-    private static boolean dfs(int v, int[] used, List<? extends Set<Integer>> g, List<Integer> ans) {
+    private static boolean dfsHasCycle(int v, int[] used, List<? extends Set<Integer>> g, List<Integer> ans) {
         used[v] = 1;
         for (Integer to : g.get(v)) {
-            if (used[to] == 1) {
-                return false;
-            }
-            if (used[to] == 0) {
-                dfs(to, used, g, ans);
+            if (used[to] == 0 && dfsHasCycle(to, used, g, ans)) {
+                return true;
+            } else if (used[to] == 1) {
+                return true;
             }
         }
         used[v] = 2;
         ans.add(v);
-        return true;
+        return false;
     }
 
     // a < b
-    private static void getEdges(String a, String b, List<? extends Set<Integer>> g) {
+    private static boolean getEdges(String a, String b, List<? extends Set<Integer>> g) {
         for (int i = 0; i < Math.min(a.length(), b.length()); i++) {
             Integer v = (int) a.charAt(i) - 'a',
                     u = (int) b.charAt(i) - 'a';
             if (!v.equals(u)) {
                 g.get(v).add(u);
+                return false;
             }
         }
+        return true;
     }
 }
