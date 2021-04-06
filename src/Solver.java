@@ -29,7 +29,6 @@ public class Solver {
         for (int i = 0; i < n; i++) {
             names[i] = scanner.nextLine();
         }
-
         List<Set<Integer>> g = new ArrayList<>(ALPHABET);
         for (int i = 0; i < ALPHABET; i++) {
             g.add(new HashSet<>());
@@ -43,12 +42,10 @@ public class Solver {
                 }
             }
         }
-
         List<Integer> ans = new ArrayList<>();
         if (!getTopSort(g, ans)) {
             return "Impossible";
         }
-
         StringBuilder sb = new StringBuilder();
         for (Integer c : ans) {
             sb.append(Character.toChars(c + 'a'));

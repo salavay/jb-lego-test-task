@@ -64,7 +64,7 @@ class SolverTest {
         assertEquals(1, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
-    @Test
+
     public void TestFromExistingFile() {
         System.out.println(Solver.testSolve(TEST_FILE_PATH));
     }
@@ -121,7 +121,6 @@ class SolverTest {
             names.add(new String(string));
         }
     }
-
 
     private static int charToInt(char a) {
         return a - 'a';
