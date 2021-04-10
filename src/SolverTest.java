@@ -9,11 +9,28 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Tester of {@link Solver}
+ * There are two types of test - correct and incorrect.
+ * Checker does the simple realisation of what in task said
+ */
 class SolverTest {
 
+    /**
+     * Path to test file
+     */
     private final static Path TEST_FILE_PATH = Path.of("src/input.txt");
+    /**
+     * System-depended new line separator
+     */
     private final String NEW_LINE_SEPARATOR = System.lineSeparator();
+    /**
+     * Size of alphabet
+     */
     private final static int ALPHABET_SIZE = 26;
+    /**
+     * Alphabet
+     */
     private final ArrayList<Character> alphabet = new ArrayList<>(List.of(
             'a', 'b', 'c', 'd',
             'e', 'f', 'g', 'h',
@@ -24,7 +41,16 @@ class SolverTest {
             'y', 'z'));
 
 
+    /**
+     * Indices which uses in comparator.
+     * Index there means where letter is in alphabet
+     */
     private final int[] indices = new int[ALPHABET_SIZE];
+    /**
+     * Comparator that uses for fast compare letters in alphabet
+     *
+     * @see #indices
+     */
     private final Comparator<String> stringComparator = (s1, s2) -> {
         for (int i = 0; i < Math.min(s1.length(), s2.length()); i++) {
             int a = charToInt(s1.charAt(i)),
@@ -40,24 +66,43 @@ class SolverTest {
         return Integer.compare(s1.length(), s2.length());
     };
 
+    /**
+     * Small possible test
+     * Helps to check correct lengths of string
+     */
     @Test
     public void SmallPossibleTest() {
         List<String> names = preparePossibleTest(10, 1, 10);
         assertEquals(0, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
+    /**
+     * Large possible test.
+     * Max ranges of string's length.
+     * Max number od strings.
+     */
     @Test
     public void LargePossibleTest() {
         List<String> names = preparePossibleTest(100, 50, 100);
         assertEquals(0, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
+
+    /**
+     * Small impossible test
+     * Helps to check correct lengths of string
+     */
     @Test
     public void SmallImpossibleTest() {
         List<String> names = prepareImpossibleTest(10, 1, 10);
         assertEquals(1, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
+    /**
+     * Large impossible test.
+     * Max ranges of string's length.
+     * Max number od strings.
+     */
     @Test
     public void LargeImpossibleTest() {
         List<String> names = prepareImpossibleTest(100, 4, 100);
@@ -65,11 +110,24 @@ class SolverTest {
     }
 
 
+    /**
+     * Test without generation test file.
+     * Uses already created test's data.
+     */
     public void TestFromExistingFile() {
         System.out.println(Solver.testSolve(TEST_FILE_PATH));
     }
 
+    /**
+     * Create possible test with given parameters.
+     *
+     * @param n number of strings
+     * @param l minimal length of string
+     * @param r maximal length of string
+     * @return Test data, where first line - number of string, then n lines of strings.
+     */
     private List<String> preparePossibleTest(int n, int l, int r) {
+        // creating test file
         if (TEST_FILE_PATH.getParent() != null) {
             try {
                 Files.createDirectories(TEST_FILE_PATH.getParent());
@@ -79,37 +137,55 @@ class SolverTest {
         }
         List<String> names = new ArrayList<>();
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(TEST_FILE_PATH)) {
+            // writing N to test file
             bufferedWriter.write(Integer.toString(n));
             bufferedWriter.write(NEW_LINE_SEPARATOR);
+            // generating random string
             generateNames(n, names, l, r);
+            // shuffle alphabet
+            // generating indices based on shuffled alphabet
             generateAlphabet();
-            getIndices(charsListToString(alphabet));
+            // sorting strings in ascending order by shuffled alphabet
             names.sort(stringComparator);
+            // writing string to the test file
             for (String name : names) {
                 bufferedWriter.write(name);
                 bufferedWriter.write(NEW_LINE_SEPARATOR);
             }
-            bufferedWriter.write(charsListToString(alphabet));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return names;
     }
 
+    /**
+     * Shuffle alphabet using {@link Collections#shuffle(List)}
+     */
     private void generateAlphabet() {
         Collections.shuffle(alphabet);
         getIndices(charsListToString(alphabet));
-        for (int i = 0; i < ALPHABET_SIZE; i++) {
-            indices[charToInt(alphabet.get(i))] = i;
-        }
     }
 
+    /**
+     * Creating {@code indices} from alphabet.
+     * Length of {@link String}  view of alphabet must be equal {@link #ALPHABET_SIZE}.
+     *
+     * @param alphabetStringView {@link String} view of alphabet
+     */
     private void getIndices(String alphabetStringView) {
         for (int i = 0; i < ALPHABET_SIZE; i++) {
             indices[charToInt(alphabetStringView.charAt(i))] = i;
         }
     }
 
+    /**
+     * Generates n random strings with length in [l, r].
+     *
+     * @param n     number of strings
+     * @param names {@link List} where names would be collected
+     * @param l     minimal length of string
+     * @param r     maximal length of string
+     */
     private void generateNames(int n, List<String> names, int l, int r) {
         Random random = new Random();
         for (int i = 0; i < n; i++) {
@@ -122,14 +198,35 @@ class SolverTest {
         }
     }
 
+    /**
+     * Return index of char starts from letter 'a'.
+     *
+     * @param a char which would be converted
+     * @return index of char starts from letter 'a'
+     */
     private static int charToInt(char a) {
         return a - 'a';
     }
 
+    /**
+     * Return {@link String} view of {@link List<Character>} without any delimiter
+     *
+     * @param list list which would be converted to {@link String}
+     * @return {@link String} view of given list
+     */
     private String charsListToString(List<Character> list) {
         return list.stream().map(Object::toString).collect(Collectors.joining());
     }
 
+    /**
+     * Method uses to check answer for test.
+     * Return 1 - if test data for impossible test
+     * 0 - if for correct
+     *
+     * @param ans   answer that needs to check
+     * @param names test data
+     * @return 1 - if test data for impossible test and 0 - if for correct one.
+     */
     private int check(String ans, List<String> names) {
         if (ans.equals("Impossible")) {
             return 1;
@@ -146,6 +243,16 @@ class SolverTest {
         return 0;
     }
 
+    /**
+     * Create impossible test with given parameters.
+     * Uses result of {@link #preparePossibleTest(int, int, int)} and makes it incorrect.
+     *
+     * @param n number of strings
+     * @param l minimal length of string
+     * @param r maximal length of string
+     * @return Test data, where first line - number of string, then n lines of strings.
+     * @see #preparePossibleTest(int, int, int)
+     */
     private List<String> prepareImpossibleTest(int n, int l, int r) {
         List<String> names = preparePossibleTest(n, l, r);
         Collections.swap(names, 0, names.size() - 1);
