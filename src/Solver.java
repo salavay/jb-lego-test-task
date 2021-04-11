@@ -10,8 +10,8 @@ public class Solver {
      */
     private static final int ALPHABET = 26;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public static void main(final String[] args) {
+        final Scanner scanner = new Scanner(System.in);
         System.out.println(solve(scanner));
     }
 
@@ -22,11 +22,11 @@ public class Solver {
      * @param path path of file with test
      * @return return answer for task
      */
-    public static String testSolve(Path path) {
+    public static String testSolve(final Path path) {
         Scanner scanner = null;
         try {
             scanner = new Scanner(Files.newInputStream(path));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         assert scanner != null;
@@ -39,13 +39,13 @@ public class Solver {
      * @param scanner input of test
      * @return answer for task
      */
-    public static String solve(Scanner scanner) {
-        int n = Integer.parseInt(scanner.nextLine());
-        String[] names = new String[n];
+    public static String solve(final Scanner scanner) {
+        final int n = Integer.parseInt(scanner.nextLine());
+        final String[] names = new String[n];
         for (int i = 0; i < n; i++) {
             names[i] = scanner.nextLine();
         }
-        List<Set<Integer>> g = new ArrayList<>(ALPHABET);
+        final List<Set<Integer>> g = new ArrayList<>(ALPHABET);
         for (int i = 0; i < ALPHABET; i++) {
             g.add(new HashSet<>());
         }
@@ -54,14 +54,14 @@ public class Solver {
          */
         for (int i = 0; i < n - 1; i++) {
             for (int j = i + 1; j < n; j++) {
-                boolean isSame = getEdges(names[i], names[j], g);
+                final boolean isSame = getEdges(names[i], names[j], g);
                 if (isSame &&
                         names[i].length() > names[j].length()) {
                     return "Impossible";
                 }
             }
         }
-        List<Integer> ans = new ArrayList<>();
+        final List<Integer> ans = new ArrayList<>();
         /*
          * Building topological sort.
          * If there is no that sort, the answer is "Impossible"
@@ -69,11 +69,11 @@ public class Solver {
         if (!getTopSort(g, ans)) {
             return "Impossible";
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         /*
          * Printing answer for task - permutation of alphabet based on topological sort
          */
-        for (Integer c : ans) {
+        for (final Integer c : ans) {
             sb.append(Character.toChars(c + 'a'));
         }
         return sb.toString();
@@ -86,8 +86,8 @@ public class Solver {
      * @param ans {@link List<Integer>} where topological sort will be put
      * @return topological sort. All edges goes to vertex with bigger index
      */
-    private static boolean getTopSort(List<? extends Set<Integer>> g, List<Integer> ans) {
-        int[] used = new int[ALPHABET];
+    private static boolean getTopSort(final List<? extends Set<Integer>> g, final List<Integer> ans) {
+        final int[] used = new int[ALPHABET];
         for (int i = 0; i < ALPHABET; i++) {
             if (used[i] == 0) {
                 if (dfsHasCycle(i, used, g, ans)) {
@@ -109,9 +109,9 @@ public class Solver {
      * @param ans  {@link List<Integer>} where topological sort will be put
      * @return is subtree has vertex in cycle
      */
-    private static boolean dfsHasCycle(int v, int[] used, List<? extends Set<Integer>> g, List<Integer> ans) {
+    private static boolean dfsHasCycle(final int v, final int[] used, final List<? extends Set<Integer>> g, final List<Integer> ans) {
         used[v] = 1;
-        for (Integer to : g.get(v)) {
+        for (final Integer to : g.get(v)) {
             if (used[to] == 0 && dfsHasCycle(to, used, g, ans)) {
                 // there is cycle in subtree of vertex to
                 return true;
@@ -132,10 +132,10 @@ public class Solver {
      * @param g graph where new edge may be added
      * @return is first given string - is a prefix of the second given string
      */
-    private static boolean getEdges(String a, String b, List<? extends Set<Integer>> g) {
+    private static boolean getEdges(final String a, final String b, final List<? extends Set<Integer>> g) {
         for (int i = 0; i < Math.min(a.length(), b.length()); i++) {
-            Integer v = (int) a.charAt(i) - 'a',
-                    u = (int) b.charAt(i) - 'a';
+            final Integer v = (int) a.charAt(i) - 'a';
+            final Integer u = (int) b.charAt(i) - 'a';
             if (!v.equals(u)) {
                 g.get(v).add(u);
                 return false;

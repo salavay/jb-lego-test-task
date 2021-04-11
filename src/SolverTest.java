@@ -72,7 +72,7 @@ class SolverTest {
      */
     @Test
     public void SmallPossibleTest() {
-        List<String> names = preparePossibleTest(10, 1, 10);
+        final List<String> names = preparePossibleTest(10, 1, 10);
         assertEquals(0, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
@@ -83,7 +83,7 @@ class SolverTest {
      */
     @Test
     public void LargePossibleTest() {
-        List<String> names = preparePossibleTest(100, 50, 100);
+        final List<String> names = preparePossibleTest(100, 50, 100);
         assertEquals(0, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
@@ -94,7 +94,7 @@ class SolverTest {
      */
     @Test
     public void SmallImpossibleTest() {
-        List<String> names = prepareImpossibleTest(10, 1, 10);
+        final List<String> names = prepareImpossibleTest(10, 1, 10);
         assertEquals(1, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
@@ -105,7 +105,7 @@ class SolverTest {
      */
     @Test
     public void LargeImpossibleTest() {
-        List<String> names = prepareImpossibleTest(100, 4, 100);
+        final List<String> names = prepareImpossibleTest(100, 4, 100);
         assertEquals(1, check(Solver.testSolve(TEST_FILE_PATH), names));
     }
 
@@ -126,17 +126,17 @@ class SolverTest {
      * @param r maximal length of string
      * @return Test data, where first line - number of string, then n lines of strings.
      */
-    private List<String> preparePossibleTest(int n, int l, int r) {
+    private List<String> preparePossibleTest(final int n, final int l, final int r) {
         // creating test file
         if (TEST_FILE_PATH.getParent() != null) {
             try {
                 Files.createDirectories(TEST_FILE_PATH.getParent());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
-        List<String> names = new ArrayList<>();
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(TEST_FILE_PATH)) {
+        final List<String> names = new ArrayList<>();
+        try (final BufferedWriter bufferedWriter = Files.newBufferedWriter(TEST_FILE_PATH)) {
             // writing N to test file
             bufferedWriter.write(Integer.toString(n));
             bufferedWriter.write(NEW_LINE_SEPARATOR);
@@ -148,11 +148,11 @@ class SolverTest {
             // sorting strings in ascending order by shuffled alphabet
             names.sort(stringComparator);
             // writing string to the test file
-            for (String name : names) {
+            for (final String name : names) {
                 bufferedWriter.write(name);
                 bufferedWriter.write(NEW_LINE_SEPARATOR);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
         return names;
@@ -172,7 +172,7 @@ class SolverTest {
      *
      * @param alphabetStringView {@link String} view of alphabet
      */
-    private void getIndices(String alphabetStringView) {
+    private void getIndices(final String alphabetStringView) {
         for (int i = 0; i < ALPHABET_SIZE; i++) {
             indices[charToInt(alphabetStringView.charAt(i))] = i;
         }
@@ -186,12 +186,12 @@ class SolverTest {
      * @param l     minimal length of string
      * @param r     maximal length of string
      */
-    private void generateNames(int n, List<String> names, int l, int r) {
-        Random random = new Random();
+    private void generateNames(final int n, final List<String> names, final int l, final int r) {
+        final Random random = new Random();
         for (int i = 0; i < n; i++) {
-            char[] string = new char[random.nextInt(r - l + 1) + l];
+            final char[] string = new char[random.nextInt(r - l + 1) + l];
             for (int c = 0; c < string.length; c++) {
-                int ind = random.nextInt(ALPHABET_SIZE);
+                final int ind = random.nextInt(ALPHABET_SIZE);
                 string[c] = alphabet.get(ind);
             }
             names.add(new String(string));
@@ -204,7 +204,7 @@ class SolverTest {
      * @param a char which would be converted
      * @return index of char starts from letter 'a'
      */
-    private static int charToInt(char a) {
+    private static int charToInt(final char a) {
         return a - 'a';
     }
 
@@ -214,7 +214,7 @@ class SolverTest {
      * @param list list which would be converted to {@link String}
      * @return {@link String} view of given list
      */
-    private String charsListToString(List<Character> list) {
+    private String charsListToString(final List<Character> list) {
         return list.stream().map(Object::toString).collect(Collectors.joining());
     }
 
@@ -227,12 +227,12 @@ class SolverTest {
      * @param names test data
      * @return 1 - if test data for impossible test and 0 - if for correct one.
      */
-    private int check(String ans, List<String> names) {
+    private int check(final String ans, final List<String> names) {
         if (ans.equals("Impossible")) {
             return 1;
         }
         getIndices(ans);
-        int n = names.size();
+        final int n = names.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = i + 1; j < n; j++) {
                 if (stringComparator.compare(names.get(i), names.get(j)) > 0) {
@@ -253,8 +253,8 @@ class SolverTest {
      * @return Test data, where first line - number of string, then n lines of strings.
      * @see #preparePossibleTest(int, int, int)
      */
-    private List<String> prepareImpossibleTest(int n, int l, int r) {
-        List<String> names = preparePossibleTest(n, l, r);
+    private List<String> prepareImpossibleTest(final int n, final int l, final int r) {
+        final List<String> names = preparePossibleTest(n, l, r);
         Collections.swap(names, 0, names.size() - 1);
         return names;
     }
